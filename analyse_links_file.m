@@ -8,60 +8,46 @@ function analyse_links_file
 load params num_pages 
 load link_param num_links
 
-NL=num_links;%130160392;
+global titles_sorted
+if ~exist('titles_sorted','var')
+    load sorted_out2;
+end
+
+
+NL=num_links;
 NP=num_pages;
 fclose('all');
 
+
 fid=fopen('links-simple-matlab.txt','r');
 
-%nouts = zeros(5716808,1);
-%outs=cell(5716808,1);
-outs=-ones(NL,1,'int32');
-starts=-ones(NP,1,'int32');
-nouts=-ones(NL,1,'int32');
+
+froms=zeros(NL,1);
+tos=zeros(NP,1);
+
 
 nlinks=0;
 tic;
 line=0;
 
-%for i=1:3740000;
-%    x=fgetl(fid); line=line+1;
-%if mod(line,10000)==0; disp(line);end
-%end
 
 count=0;
+
 while(1)
     line=line+1;
    % if line==100000;break;end
     x=fgetl(fid);
-    %disp(x);
-    perc=find(x=='%');
-    eq=find(x=='=');
-    
-    np=length(perc); ne=length(eq);
-    if np~=ne
-        disp(x)
-        error('Okay');
-    end
-    
-    if np==1
-        for jjj=1:np
-            x(perc(jjj):eq(jjj))=[];
-            %disp(x);
-        end
-    end
+   
     
     col=find(x==':');
     if length(col)==1
-        from=str2num(x(1:col-1));
-        to=str2num(x(col+1:end));
-        nouts(from)=length(to);
-        %outs{from}=to;
-        outs(count+1:count+length(to))=to;
-        starts(from)=count+1;
-        count=count+length(to);
-        nlinks=nlinks+length(to);
-        if ~all(from==sort(from));disp(x);end
+        to=str2num(x(1:col-1));
+        from=str2num(x(col+1:end));
+
+        num = length(from);
+        tos(nlinks+1:nlinks+num) = to;
+        froms(nlinks+1:nlinks+num)=from;
+        nlinks=nlinks+num;
     end
     
     
@@ -71,10 +57,45 @@ while(1)
     
     if feof(fid);break;end;
     
+    %if nlinks>20000000;break;end
     
 end
+fprintf('nlinks=%d  NL=%d\n',nlinks,NL);
+
+
+S=sparse(tos(1:nlinks),froms(1:nlinks), ones(nlinks,1), NP,NP);
+
+if 0
+    for from=1:NP
+        to = find(S(:,from));
+        nto =length(to);
+        if nto>0 && rand < .0001
+            fprintf('%s:',titles_sorted{from});
+            for k=1:nto
+                fprintf(' %s',titles_sorted{to(k)});
+            end
+            fprintf('\n');
+        end
+    end
+end
+
+
+
 
 fo=fopen('links-simple-sorted.txt','w');
+for from=1:NP
+    to = find(S(:,from));
+    if length(to)>0
+        fprintf(fo,'%d:',from);
+        fprintf(fo,' %d',to);
+        fprintf(fo,'\n');
+    end
+end
+fclose(fo);
+
+return
+
+
 for j=1:NP
     if mod(j,100000)==0; fprintf('\n   write   line=%d  time  = %f',j,toc);end
     nout=nouts(j);

@@ -11,7 +11,7 @@ load params num_pages max_page_id
 tic
 
 fclose('all');
-fid=fopen('page-simple-matlab2.txt','r');
+fid=fopen('page-simple-matlab2.txt','r','n','windows-1252');
 
 % The total number of pages:
 np=num_pages;
@@ -29,7 +29,9 @@ for j=1:np
     ind=find(x==' ',1,'first');
     page_ids(j)=int32(str2num(x(1:ind-1)));
     titles{j}=x(ind+1:end);
-    
+    if any(x==26)
+        fprintf('%d %s\n',j,x);
+    end
 end
 
 disp(x)
@@ -45,6 +47,6 @@ pid_sm(sm_pid)=[int32(1):int32(np)];
 
 save sorted_out2 titles_sorted pid_sm sm_pid
 
-fid=fopen('titles-sorted.txt','w'); for j=1:length(titles_sorted); fprintf(fid,'%s\n',titles_sorted{j});end;fclose(fid);
+fid=fopen('titles-sorted.txt','w','n','windows-1252'); for j=1:length(titles_sorted); fprintf(fid,'%s\n',titles_sorted{j});end;fclose(fid);
 
 
