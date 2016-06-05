@@ -5,7 +5,7 @@ function convert_page_file
 % simpler file page-simple-matlab2.txt containing a list of page titles and
 % corresponding wikipedia-assigned page ids.
 
-f_in=fopen('c:\wikipedia\20160204\enwiki-20160305-page.sql','r','n','windows-1252');
+f_in=fopen('./20160204/enwiki-20160305-page.sql','r','n','windows-1252');
 f_out=fopen('page-simple-matlab2.txt','w','n','windows-1252');
 
 
@@ -20,6 +20,7 @@ tic;
 max_page_id=0;
 num_pages=0;
 sk=0;
+line=0;
 while(1)
     n0=0;n1=1;
     x=fgetl(f_in);
