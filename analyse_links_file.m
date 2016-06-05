@@ -8,7 +8,7 @@ function analyse_links_file
 load params num_pages 
 load link_param num_links
 
-global titles_sorted
+global titles_sorted 
 if ~exist('titles_sorted','var')
     load sorted_out2;
 end
@@ -66,20 +66,21 @@ fprintf('nlinks=%d  NL=%d\n',nlinks,NL);
 S=sparse(tos(1:nlinks),froms(1:nlinks), ones(nlinks,1), NP,NP);
 
 if 0
+    fot = fopen('links-text.txt','w');
     for from=1:NP
         to = find(S(:,from));
         nto =length(to);
-        if nto>0 && rand < .0001
-            fprintf('%s:',titles_sorted{from});
-            for k=1:nto
-                fprintf(' %s',titles_sorted{to(k)});
-            end
-            fprintf('\n');
+        %if nto>0 && rand < .0001
+        fprintf(fot,'%s:',titles_sorted{from});
+        for k=1:nto
+            fprintf(fot,' %s',titles_sorted{to(k)});
         end
+        fprintf(fot,'\n');
+        %end
     end
 end
 
-
+%return
 
 
 fo=fopen('links-simple-sorted.txt','w');

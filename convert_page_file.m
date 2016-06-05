@@ -1,16 +1,9 @@
 
 function convert_page_file
 
-% Parse the downloaded file enwiki-20081008-page.sql, and create the
+% Parse the downloaded file enwiki-YYYYMMDD-page.sql, and create the
 % simpler file page-simple-matlab2.txt containing a list of page titles and
 % corresponding wikipedia-assigned page ids.
-%
-% Henry Haselgrove, January 2009.
-
-feature('DefaultCharacterSet','UTF8')
-feature('DefaultCharacterSet')
-
-fclose('all');
 
 f_in=fopen('c:\wikipedia\20160204\enwiki-20160305-page.sql','r','n','windows-1252');
 f_out=fopen('page-simple-matlab2.txt','w','n','windows-1252');
@@ -30,25 +23,23 @@ sk=0;
 while(1)
     n0=0;n1=1;
     x=fgetl(f_in);
-    %fprintf(f_out2,'%s\n',x);
     
     if length(x)<27 || ~strcmp(x(1:11),'INSERT INTO');
         disp(x);
     else
         line=line+1;
-        %if line<320;disp('sk');continue;end
-        
         
         x=x(27:end);
-        y=x;
-
         
+        
+        % Find escaped backslashes ( "\\") in the line of
+        % text, and replace them with temporary dummy values
         di=diff(x=='\');
         starts = find(di==1)+1;
         stops = find(di==-1);
         lens = stops-starts+1;
         starts=starts(lens>1);
-       % 
+      
         lens=lens(lens>1);
         nrep = fix(lens/2);
         for j=1:length(nrep)
@@ -57,6 +48,7 @@ while(1)
             end
         end
     
+       
         x=strrep(x,'\''', dummy_quote);
         x=strrep(x,'\"','"');
         x=strrep(x,'''''', '');
